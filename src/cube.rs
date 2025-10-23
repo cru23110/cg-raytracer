@@ -112,45 +112,36 @@ impl Cube {
         }
     }
 
-    /// Retorna coordenadas UV en la cara del cubo
-    /// face_id: 0=X-, 1=X+, 2=Y-, 3=Y+, 4=Z-, 5=Z+
     pub fn get_uv(&self, point: &Point3) -> Option<(f32, f32, usize)> {
         let epsilon = 1e-4;
         let size_x = self.max.x - self.min.x;
         let size_y = self.max.y - self.min.y;
         let size_z = self.max.z - self.min.z;
 
-        // Determinar en qué cara está el punto
-        if (point.x - self.min.x).abs() < epsilon {
-            // Cara X-
-            let u = (point.z - self.min.z) / size_z;
-            let v = (point.y - self.min.y) / size_y;
+        if (point.y - self.max.y).abs() < epsilon {
+            let u = (point.x - self.min.x) / size_x;
+            let v = (point.z - self.min.z) / size_z;
             Some((u, v, 0))
-        } else if (point.x - self.max.x).abs() < epsilon {
-            // Cara X+
-            let u = 1.0 - (point.z - self.min.z) / size_z;
-            let v = (point.y - self.min.y) / size_y;
-            Some((u, v, 1))
         } else if (point.y - self.min.y).abs() < epsilon {
-            // Cara Y-
             let u = (point.x - self.min.x) / size_x;
             let v = 1.0 - (point.z - self.min.z) / size_z;
             Some((u, v, 2))
-        } else if (point.y - self.max.y).abs() < epsilon {
-            // Cara Y+
-            let u = (point.x - self.min.x) / size_x;
-            let v = (point.z - self.min.z) / size_z;
-            Some((u, v, 3))
+        } else if (point.x - self.min.x).abs() < epsilon {
+            let u = (point.z - self.min.z) / size_z;
+            let v = (point.y - self.min.y) / size_y;
+            Some((u, v, 1))
+        } else if (point.x - self.max.x).abs() < epsilon {
+            let u = 1.0 - (point.z - self.min.z) / size_z;
+            let v = (point.y - self.min.y) / size_y;
+            Some((u, v, 1))
         } else if (point.z - self.min.z).abs() < epsilon {
-            // Cara Z-
             let u = (point.x - self.min.x) / size_x;
             let v = (point.y - self.min.y) / size_y;
-            Some((u, v, 4))
+            Some((u, v, 1))
         } else if (point.z - self.max.z).abs() < epsilon {
-            // Cara Z+
             let u = 1.0 - (point.x - self.min.x) / size_x;
             let v = (point.y - self.min.y) / size_y;
-            Some((u, v, 5))
+            Some((u, v, 1))
         } else {
             None
         }

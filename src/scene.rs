@@ -92,15 +92,12 @@ impl Intersectable for Pyramid {
     }
 }
 
-/// Estructura que define una escena completa con objetos, luces y cámara
 pub struct Scene {
     pub objects: Vec<Box<dyn Intersectable>>,
     pub lights: Vec<Light>,
     pub camera: Camera,
     pub background_color: Color,
-
-    // Preparación para Fase 3 (texturas)
-    pub textures: Vec<()>, // Será reemplazado con struct Texture en Fase 3
+    pub textures: Vec<()>,
 }
 
 impl Scene {

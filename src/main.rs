@@ -29,50 +29,33 @@ const HEIGHT: u32 = 600;
 const MAX_DEPTH: u32 = 5;
 
 fn main() {
-    println!("🎨 Raytracer - Iniciando renderizado...");
+    println!("🎨 Raytracer - Fase 2: Cubo con luz difusa");
     println!("Resolución: {}x{}", WIDTH, HEIGHT);
 
     let camera = Camera::new(
-        Point3::new(4.0, 3.5, 6.0),
-        Point3::new(0.0, 0.0, 0.0),
+        Point3::new(3.0, 2.5, 4.0),
+        Point3::new(0.0, 0.5, 0.0),
         Vec3::new(0.0, 1.0, 0.0),
-        50.0,
+        45.0,
         WIDTH as f32 / HEIGHT as f32,
         WIDTH,
         HEIGHT,
     );
 
-    let mut scene = Scene::new(camera, Color::new(0.1, 0.15, 0.25));
+    let mut scene = Scene::new(camera, Color::new(0.2, 0.2, 0.25));
+
     scene.add_light(Light::white(Point3::new(5.0, 6.0, 4.0), 1.0));
 
     scene.add_plane(Plane::new(
         Point3::new(0.0, -1.0, 0.0),
         Vec3::new(0.0, 1.0, 0.0),
-        Material::diffuse(Color::new(0.9, 0.9, 0.9)),
-    ));
-
-    scene.add_sphere(Sphere::new(
-        Point3::new(-2.5, 0.0, -1.0),
-        0.7,
-        Material::diffuse(Color::new(0.9, 0.2, 0.2)),
-    ));
-
-    scene.add_pyramid(Pyramid::centered(
-        Point3::new(1.5, 0.0, -0.5),
-        1.2,
-        Material::shiny(Color::new(0.2, 0.9, 0.2)),
-    ));
-
-    scene.add_sphere(Sphere::new(
-        Point3::new(3.0, 0.3, 0.5),
-        0.8,
-        Material::reflective(Color::new(0.2, 0.3, 0.9)),
+        Material::diffuse(Color::new(0.85, 0.85, 0.85)),
     ));
 
     scene.add_cube(Cube::centered(
-        Point3::new(-0.3, 0.0, 1.0),
-        1.2,
-        Material::shiny(Color::new(0.9, 0.9, 0.3)),
+        Point3::new(0.0, 0.5, 0.0),
+        2.0,
+        Material::diffuse(Color::new(0.8, 0.3, 0.2)),
     ));
 
     println!("Renderizando escena...");
