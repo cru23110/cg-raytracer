@@ -6,6 +6,7 @@ mod light;
 mod sphere;
 mod plane;
 mod cube;
+mod pyramid;
 mod scene;
 mod renderer;
 
@@ -19,6 +20,7 @@ use light::Light;
 use sphere::Sphere;
 use plane::Plane;
 use cube::Cube;
+use pyramid::Pyramid;
 use scene::Scene;
 use renderer::Renderer;
 
@@ -30,64 +32,51 @@ fn main() {
     println!("🎨 Raytracer - Iniciando renderizado...");
     println!("Resolución: {}x{}", WIDTH, HEIGHT);
 
-    // Crear cámara
     let camera = Camera::new(
-        Point3::new(5.0, 3.0, 5.0),  // posición
-        Point3::new(0.0, 0.5, 0.0),  // mira a
-        Vec3::new(0.0, 1.0, 0.0),    // vector arriba
-        45.0,                         // FOV
-        WIDTH as f32 / HEIGHT as f32, // aspect ratio
+        Point3::new(4.0, 3.5, 6.0),
+        Point3::new(0.0, 0.0, 0.0),
+        Vec3::new(0.0, 1.0, 0.0),
+        50.0,
+        WIDTH as f32 / HEIGHT as f32,
         WIDTH,
         HEIGHT,
     );
 
-    // Crear escena
-    let mut scene = Scene::new(camera, Color::new(0.1, 0.15, 0.2)); // fondo azul oscuro
+    let mut scene = Scene::new(camera, Color::new(0.1, 0.15, 0.25));
+    scene.add_light(Light::white(Point3::new(5.0, 6.0, 4.0), 1.0));
 
-    // Agregar luces
-    scene.add_light(Light::white(Point3::new(5.0, 5.0, 5.0), 1.2));
-    scene.add_light(Light::white(Point3::new(-5.0, 4.0, 3.0), 0.8));
-
-    // Agregar piso (plano)
     scene.add_plane(Plane::new(
         Point3::new(0.0, -1.0, 0.0),
         Vec3::new(0.0, 1.0, 0.0),
-        Material::diffuse(Color::new(0.8, 0.8, 0.8)),
+        Material::diffuse(Color::new(0.9, 0.9, 0.9)),
     ));
 
-    // Agregar esferas con diferentes materiales
-    // Esfera roja (difusa)
     scene.add_sphere(Sphere::new(
-        Point3::new(-2.0, 0.5, 0.0),
-        0.8,
-        Material::diffuse(Color::new(1.0, 0.3, 0.3)),
+        Point3::new(-2.5, 0.0, -1.0),
+        0.7,
+        Material::diffuse(Color::new(0.9, 0.2, 0.2)),
     ));
 
-    // Esfera verde (con especularidad)
+    scene.add_pyramid(Pyramid::centered(
+        Point3::new(1.5, 0.0, -0.5),
+        1.2,
+        Material::shiny(Color::new(0.2, 0.9, 0.2)),
+    ));
+
     scene.add_sphere(Sphere::new(
-        Point3::new(0.0, 0.5, -1.5),
+        Point3::new(3.0, 0.3, 0.5),
         0.8,
-        Material::shiny(Color::new(0.3, 1.0, 0.3)),
+        Material::reflective(Color::new(0.2, 0.3, 0.9)),
     ));
 
-    // Esfera azul (reflectante)
-    scene.add_sphere(Sphere::new(
-        Point3::new(2.0, 0.8, 0.5),
-        0.8,
-        Material::reflective(Color::new(0.3, 0.3, 1.0)),
-    ));
-
-    // Agregar cubo (preparación para Fase 2)
     scene.add_cube(Cube::centered(
-        Point3::new(-1.5, 1.5, 2.0),
-        1.0,
-        Material::shiny(Color::new(1.0, 1.0, 0.3)),
+        Point3::new(-0.3, 0.0, 1.0),
+        1.2,
+        Material::shiny(Color::new(0.9, 0.9, 0.3)),
     ));
 
-    // Renderizar escena
     println!("Renderizando escena...");
     let mut framebuffer: Vec<Vec<Color>> = vec![vec![Color::zero(); WIDTH as usize]; HEIGHT as usize];
-
     let start = std::time::Instant::now();
 
     for y in 0..HEIGHT {
@@ -98,7 +87,7 @@ fn main() {
 
         for x in 0..WIDTH {
             let u = x as f32 / WIDTH as f32;
-            let v = y as f32 / HEIGHT as f32;
+            let v = 1.0 - (y as f32 / HEIGHT as f32);
 
             let ray = scene.camera.get_ray(u, v);
             let color = Renderer::trace_ray(&ray, &scene, MAX_DEPTH);
@@ -109,7 +98,6 @@ fn main() {
     let elapsed = start.elapsed();
     println!("✓ Renderizado completado en {:.2}s", elapsed.as_secs_f32());
 
-    // Guardar imagen
     println!("Guardando imagen...");
     save_image(&framebuffer, "src/output/scene.png").expect("Error al guardar la imagen");
     println!("✓ Imagen guardada en: src/output/scene.png");

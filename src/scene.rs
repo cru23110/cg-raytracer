@@ -6,6 +6,7 @@ use crate::camera::Camera;
 use crate::sphere::Sphere;
 use crate::plane::Plane;
 use crate::cube::Cube;
+use crate::pyramid::Pyramid;
 
 /// Trait que define la interfaz común para todos los objetos intersectables
 pub trait Intersectable: Send + Sync {
@@ -72,6 +73,25 @@ impl Intersectable for Cube {
     }
 }
 
+// Implementar trait para Pyramid
+impl Intersectable for Pyramid {
+    fn intersect(&self, ray: &Ray) -> Option<f32> {
+        Pyramid::intersect(self, ray)
+    }
+
+    fn normal_at(&self, point: &Point3) -> Vec3 {
+        Pyramid::normal_at(self, point)
+    }
+
+    fn get_material(&self) -> &Material {
+        &self.material
+    }
+
+    fn get_uv(&self, point: &Point3) -> Option<(f32, f32, usize)> {
+        Pyramid::get_uv(self, point)
+    }
+}
+
 /// Estructura que define una escena completa con objetos, luces y cámara
 pub struct Scene {
     pub objects: Vec<Box<dyn Intersectable>>,
@@ -113,6 +133,11 @@ impl Scene {
     /// Agrega un cubo a la escena
     pub fn add_cube(&mut self, cube: Cube) {
         self.objects.push(Box::new(cube));
+    }
+
+    /// Agrega una pirámide a la escena
+    pub fn add_pyramid(&mut self, pyramid: Pyramid) {
+        self.objects.push(Box::new(pyramid));
     }
 
     /// Agrega una luz a la escena

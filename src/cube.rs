@@ -86,7 +86,7 @@ impl Cube {
 
     /// Calcula la normal en un punto de la superficie del cubo
     pub fn normal_at(&self, point: &Point3) -> Vec3 {
-        // Encontrar qué cara del cubo está más cerca
+        // Encontrar qué cara del cubo está más cerca del punto
         let dx_min = (point.x - self.min.x).abs();
         let dx_max = (point.x - self.max.x).abs();
         let dy_min = (point.y - self.min.y).abs();
@@ -96,33 +96,19 @@ impl Cube {
 
         let min_dist = dx_min.min(dx_max).min(dy_min).min(dy_max).min(dz_min).min(dz_max);
 
-        if (point.x - self.min.x).abs() < 1e-4 {
+        // Retornar la normal de la cara más cercana
+        if (min_dist - dx_min).abs() < 1e-6 {
             Vec3::new(-1.0, 0.0, 0.0)
-        } else if (point.x - self.max.x).abs() < 1e-4 {
+        } else if (min_dist - dx_max).abs() < 1e-6 {
             Vec3::new(1.0, 0.0, 0.0)
-        } else if (point.y - self.min.y).abs() < 1e-4 {
+        } else if (min_dist - dy_min).abs() < 1e-6 {
             Vec3::new(0.0, -1.0, 0.0)
-        } else if (point.y - self.max.y).abs() < 1e-4 {
+        } else if (min_dist - dy_max).abs() < 1e-6 {
             Vec3::new(0.0, 1.0, 0.0)
-        } else if (point.z - self.min.z).abs() < 1e-4 {
+        } else if (min_dist - dz_min).abs() < 1e-6 {
             Vec3::new(0.0, 0.0, -1.0)
-        } else if (point.z - self.max.z).abs() < 1e-4 {
-            Vec3::new(0.0, 0.0, 1.0)
         } else {
-            // Fallback: determinar la cara más cercana
-            if min_dist == dx_min {
-                Vec3::new(-1.0, 0.0, 0.0)
-            } else if min_dist == dx_max {
-                Vec3::new(1.0, 0.0, 0.0)
-            } else if min_dist == dy_min {
-                Vec3::new(0.0, -1.0, 0.0)
-            } else if min_dist == dy_max {
-                Vec3::new(0.0, 1.0, 0.0)
-            } else if min_dist == dz_min {
-                Vec3::new(0.0, 0.0, -1.0)
-            } else {
-                Vec3::new(0.0, 0.0, 1.0)
-            }
+            Vec3::new(0.0, 0.0, 1.0)
         }
     }
 
