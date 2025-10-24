@@ -28,8 +28,19 @@ impl Renderer {
         material: &crate::material::Material,
         scene: &Scene,
         view_dir: &Vec3,
+        uv_data: Option<(f32, f32, usize)>,
     ) -> Color {
-        let ambient = material.color * AMBIENT_STRENGTH;
+        let base_color = if let Some((u, v, tex_id)) = uv_data {
+            if tex_id < scene.textures.len() {
+                scene.textures[tex_id].sample(u, v)
+            } else {
+                material.color
+            }
+        } else {
+            material.color
+        };
+
+        let ambient = base_color * AMBIENT_STRENGTH;
         let mut color = ambient;
 
         for light in &scene.lights {
@@ -49,9 +60,8 @@ impl Renderer {
             }
 
             let diffuse_intensity = normal.dot(&light_dir).max(0.0);
-            let diffuse = material.color * diffuse_intensity * material.albedo * light.intensity;
+            let diffuse = base_color * diffuse_intensity * material.albedo * light.intensity;
 
-            // Phong specular: reflect incident light direction
             let reflected_light = (-light_dir).reflect(normal);
             let specular_intensity = reflected_light.dot(view_dir).max(0.0).powf(material.shininess);
             let specular = (light.color * specular_intensity * material.specular) * light.intensity;
@@ -70,7 +80,8 @@ impl Renderer {
         if let Some((_t, hit_point, normal, object)) = Self::find_closest_intersection(ray, scene) {
             let material = object.get_material();
             let view_dir = (scene.camera.position - hit_point).normalize();
-            let mut local_color = Self::shade(&hit_point, &normal, material, scene, &view_dir);
+            let uv_data = object.get_uv(&hit_point);
+            let mut local_color = Self::shade(&hit_point, &normal, material, scene, &view_dir, uv_data);
 
             if material.reflectivity > 0.0 && depth > 1 {
                 let reflected_dir = ray.direction.reflect(&normal);

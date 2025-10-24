@@ -45,9 +45,7 @@ impl Plane {
         self.normal
     }
 
-    /// Retorna coordenadas UV en el plano (preparación para Fase 3)
     pub fn get_uv(&self, point: &Point3) -> Option<(f32, f32, usize)> {
-        // Crear dos vectores ortogonales en el plano
         let tangent = if self.normal.x.abs() > 0.9 {
             Vec3::new(0.0, 1.0, 0.0).cross(&self.normal).normalize()
         } else {
@@ -57,9 +55,9 @@ impl Plane {
         let bitangent = self.normal.cross(&tangent).normalize();
         let relative_pos = *point - self.point;
 
-        let u = (relative_pos.dot(&tangent) * 0.1) % 1.0;
-        let v = (relative_pos.dot(&bitangent) * 0.1) % 1.0;
+        let u = (relative_pos.dot(&tangent) * 0.5) % 1.0;
+        let v = (relative_pos.dot(&bitangent) * 0.5) % 1.0;
 
-        Some((u.abs(), v.abs(), 0))
+        Some((u.abs(), v.abs(), 1))
     }
 }

@@ -1,5 +1,5 @@
 use crate::vector::Color;
-use image::{ImageBuffer, Rgb, RgbImage};
+use image::RgbImage;
 
 #[derive(Clone)]
 pub struct Texture {
@@ -43,75 +43,4 @@ impl Texture {
 
         self.data[y as usize][x as usize]
     }
-}
-
-pub fn create_minecraft_grass_top() -> RgbImage {
-    let size = 16;
-    let mut img = ImageBuffer::new(size, size);
-
-    let base_green = Rgb([106, 170, 64]);
-    let dark_green = Rgb([76, 140, 34]);
-
-    for y in 0..size {
-        for x in 0..size {
-            let pattern = (x + y) % 4;
-            let color = if pattern == 0 || pattern == 3 {
-                dark_green
-            } else {
-                base_green
-            };
-            img.put_pixel(x, y, color);
-        }
-    }
-
-    img
-}
-
-pub fn create_minecraft_grass_side() -> RgbImage {
-    let size = 16;
-    let mut img = ImageBuffer::new(size, size);
-
-    let dirt_color = Rgb([134, 96, 67]);
-    let grass_green = Rgb([106, 170, 64]);
-    let dark_green = Rgb([76, 140, 34]);
-
-    for y in 0..size {
-        for x in 0..size {
-            if y < 3 {
-                let pattern = (x + y) % 3;
-                let color = if pattern == 0 {
-                    dark_green
-                } else {
-                    grass_green
-                };
-                img.put_pixel(x, y, color);
-            } else {
-                img.put_pixel(x, y, dirt_color);
-            }
-        }
-    }
-
-    img
-}
-
-pub fn create_minecraft_dirt() -> RgbImage {
-    let size = 16;
-    let mut img = ImageBuffer::new(size, size);
-
-    let dirt_base = Rgb([134, 96, 67]);
-    let dirt_dark = Rgb([114, 76, 47]);
-
-    for y in 0..size {
-        for x in 0..size {
-            let pattern = (x * 3 + y * 5) % 7;
-            let color = if pattern < 2 {
-                dirt_dark
-            } else {
-                dirt_base
-            };
-            img.put_pixel(x, y, color);
-        }
-    }
-
-    img
 }

@@ -9,6 +9,7 @@ mod cube;
 mod pyramid;
 mod scene;
 mod renderer;
+mod texture;
 
 use std::path::Path;
 use image::{ImageBuffer, Rgb};
@@ -23,13 +24,14 @@ use cube::Cube;
 use pyramid::Pyramid;
 use scene::Scene;
 use renderer::Renderer;
+use texture::Texture;
 
 const WIDTH: u32 = 800;
 const HEIGHT: u32 = 600;
 const MAX_DEPTH: u32 = 5;
 
 fn main() {
-    println!("🎨 Raytracer - Fase 2: Cubo con luz difusa");
+    println!("🎨 Raytracer - Fase 3: Cubo con texturas Minecraft");
     println!("Resolución: {}x{}", WIDTH, HEIGHT);
 
     let camera = Camera::new(
@@ -44,6 +46,41 @@ fn main() {
 
     let mut scene = Scene::new(camera, Color::new(0.2, 0.2, 0.25));
 
+    println!("Cargando texturas...");
+
+    let redstone_tex = match Texture::from_image("textures/redstoneblock.png") {
+        Ok(tex) => {
+            println!("✓ Textura redstone cargada");
+            tex
+        }
+        Err(e) => {
+            println!("⚠ No se encontró redstoneblock.png: {}", e);
+            Texture {
+                width: 1,
+                height: 1,
+                data: vec![vec![Color::new(0.8, 0.2, 0.2)]],
+            }
+        }
+    };
+
+    let stone_tex = match Texture::from_image("textures/stoneblock.png") {
+        Ok(tex) => {
+            println!("✓ Textura stone cargada");
+            tex
+        }
+        Err(e) => {
+            println!("⚠ No se encontró stoneblock.png: {}", e);
+            Texture {
+                width: 1,
+                height: 1,
+                data: vec![vec![Color::new(0.6, 0.6, 0.6)]],
+            }
+        }
+    };
+
+    let redstone_id = scene.add_texture(redstone_tex);
+    let stone_id = scene.add_texture(stone_tex);
+
     scene.add_light(Light::white(Point3::new(5.0, 6.0, 4.0), 1.0));
 
     scene.add_plane(Plane::new(
@@ -55,7 +92,7 @@ fn main() {
     scene.add_cube(Cube::centered(
         Point3::new(0.0, 0.5, 0.0),
         2.0,
-        Material::diffuse(Color::new(0.8, 0.3, 0.2)),
+        Material::diffuse(Color::new(1.0, 1.0, 1.0)),
     ));
 
     println!("Renderizando escena...");
@@ -82,8 +119,8 @@ fn main() {
     println!("✓ Renderizado completado en {:.2}s", elapsed.as_secs_f32());
 
     println!("Guardando imagen...");
-    save_image(&framebuffer, "src/output/scene.png").expect("Error al guardar la imagen");
-    println!("✓ Imagen guardada en: src/output/scene.png");
+    save_image(&framebuffer, "src/output/phase3_cube_textured.png").expect("Error al guardar la imagen");
+    println!("✓ Imagen guardada en: src/output/phase3_cube_textured.png");
 }
 
 /// Convierte un color (0.0-1.0) a RGB (0-255)

@@ -7,6 +7,7 @@ use crate::sphere::Sphere;
 use crate::plane::Plane;
 use crate::cube::Cube;
 use crate::pyramid::Pyramid;
+use crate::texture::Texture;
 
 /// Trait que define la interfaz común para todos los objetos intersectables
 pub trait Intersectable: Send + Sync {
@@ -97,7 +98,7 @@ pub struct Scene {
     pub lights: Vec<Light>,
     pub camera: Camera,
     pub background_color: Color,
-    pub textures: Vec<()>,
+    pub textures: Vec<Texture>,
 }
 
 impl Scene {
@@ -140,6 +141,11 @@ impl Scene {
     /// Agrega una luz a la escena
     pub fn add_light(&mut self, light: Light) {
         self.lights.push(light);
+    }
+
+    pub fn add_texture(&mut self, texture: Texture) -> usize {
+        self.textures.push(texture);
+        self.textures.len() - 1
     }
 
     /// Encuentra la intersección más cercana en la escena

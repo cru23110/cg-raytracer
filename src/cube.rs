@@ -124,24 +124,24 @@ impl Cube {
             Some((u, v, 0))
         } else if (point.y - self.min.y).abs() < epsilon {
             let u = (point.x - self.min.x) / size_x;
-            let v = 1.0 - (point.z - self.min.z) / size_z;
-            Some((u, v, 2))
+            let v = (point.z - self.min.z) / size_z;
+            Some((u, v, 0))
         } else if (point.x - self.min.x).abs() < epsilon {
             let u = (point.z - self.min.z) / size_z;
             let v = (point.y - self.min.y) / size_y;
-            Some((u, v, 1))
+            Some((u, v, 0))
         } else if (point.x - self.max.x).abs() < epsilon {
-            let u = 1.0 - (point.z - self.min.z) / size_z;
+            let u = (point.z - self.min.z) / size_z;
             let v = (point.y - self.min.y) / size_y;
-            Some((u, v, 1))
+            Some((u, v, 0))
         } else if (point.z - self.min.z).abs() < epsilon {
             let u = (point.x - self.min.x) / size_x;
             let v = (point.y - self.min.y) / size_y;
-            Some((u, v, 1))
+            Some((u, v, 0))
         } else if (point.z - self.max.z).abs() < epsilon {
-            let u = 1.0 - (point.x - self.min.x) / size_x;
+            let u = (point.x - self.min.x) / size_x;
             let v = (point.y - self.min.y) / size_y;
-            Some((u, v, 1))
+            Some((u, v, 0))
         } else {
             None
         }
