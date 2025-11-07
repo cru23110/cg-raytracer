@@ -30,9 +30,17 @@ impl Renderer {
         view_dir: &Vec3,
         uv_data: Option<(f32, f32, usize)>,
     ) -> Color {
-        let base_color = if let Some((u, v, tex_id)) = uv_data {
-            if tex_id < scene.textures.len() {
-                scene.textures[tex_id].sample(u, v)
+        let base_color = if material.has_texture {
+            if let Some((u, v, _)) = uv_data {
+                if let Some(tex_id) = material.texture_id {
+                    if tex_id < scene.textures.len() {
+                        scene.textures[tex_id].sample(u, v)
+                    } else {
+                        material.color
+                    }
+                } else {
+                    material.color
+                }
             } else {
                 material.color
             }
